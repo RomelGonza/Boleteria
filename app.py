@@ -1,4 +1,5 @@
 import sqlite3
+import pytz
 from datetime import datetime
 import pandas as pd
 import streamlit as st
@@ -82,10 +83,15 @@ class SistemaBoleteria:
             return False, mensaje
 
         try:
-            fecha_hora = datetime.now()
+            # Establecer la zona horaria de Perú (UTC-5)
+            peru_tz = pytz.timezone('America/Lima')
+
+            # Obtener la hora actual en la zona horaria de Perú
+            fecha_hora = datetime.now(peru_tz)
+
             conn = sqlite3.connect('boletos.db')
             cursor = conn.cursor()
-            cursor.execute('''
+            cursor.execute(''' 
                 INSERT INTO boletos (codigo_boleto, categoria, fecha, hora)
                 VALUES (?, ?, ?, ?)
             ''', (codigo, categoria, fecha_hora.strftime('%Y-%m-%d'), fecha_hora.strftime('%H:%M:%S')))
